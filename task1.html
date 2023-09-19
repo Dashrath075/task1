@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Task</title>
+</head>
+
+<body style="font-weight: 600; background-color: lightgray; margin-left: 5%;margin-top: 2%;">
+    <form id="myForm">
+        <table style="position: absolute; background-color: aliceblue; width: 500px; height: 60vh; margin-left: -5%;">
+            <tr>
+                <td> FirstName: </td>
+                <td><input type="text" placeholder="FirstName" id="FirstName" required></td>
+            </tr>
+            <tr>
+                <td> LastName: </td>
+                <td><input type="text" placeholder="LastName" id="LastName" required></td>
+            </tr>
+            <tr>
+                <td><label for="dob">Date of Birth:</label></td>
+                <td><input type="date" id="dob" name="dob" id="dob" required></td>
+            </tr>
+            <tr>
+                <td> Age: </td>
+                <td><input type="text" id="ageInput" name="input" id="Age" disabled style="cursor: not-allowed;"></td>
+            </tr>
+            <tr>
+                <td> Gender: </td>
+                <td>
+                    <input type="radio" name="Gender" id="Gender" value="Male" required>Male
+                    <input type="radio" name="Gender" id="Gender" value="Female">Female
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="submit"
+                        style="height: 30px; border-radius: 25%; cursor: pointer; width: 100px; margin-top: 10%; margin-left: 30%;">
+                </td>
+            </tr>
+        </table>
+        <script>
+            const dobInput = document.getElementById('dob');
+            const ageInput = document.getElementById('ageInput');
+
+            // Add an event listener to calculate age when the date of birth changes
+            dobInput.addEventListener('input', calculateAge);
+
+            function calculateAge() {
+                const dob = new Date(dobInput.value);
+                const today = new Date();
+                //extracts year from current year and dob year and calculates age
+                const year = today.getFullYear() - dob.getFullYear();
+                const month = today.getMonth() - dob.getMonth();
+                const day = today.getDate() - dob.getDate();
+
+                const age = year.toString() + ' Years ' + month.toString() + ' months ' + day.toString() + ' days ';
+
+                if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+
+                // Display the calculated age in the age input field
+                ageInput.value = age;
+            }
+        </script>
+    </form>
+
+    
+    
+    <h3>Form Data Display</h3>
+    <div id="formDataDisplay" style="margin-right: 40%;margin-top:30%;"></div>
+
+    <script>
+        const formArray = [];
+        const formDataDisplay = document.getElementById('formDataDisplay');
+
+        document.getElementById('myForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Collect form data
+            const formData = {
+                FirstName: document.getElementById('FirstName').value,
+                LastName: document.getElementById('LastName').value,
+                dob: document.getElementById('dob').value,
+                Age: document.getElementById('ageInput').value,
+                Gender: document.querySelector('input[name="Gender"]:checked').value,
+            };
+
+            formArray.push(formData); // Push data to an array
+
+            // Display the collected data on the HTML page
+            renderTable(); // Call a function to render the table
+        });
+         
+        
+        function renderTable() {
+            const displayText = formArray.map((data, index) => {
+                // const Oldage = 30;
+                // const ageComparison = parseInt(data.Age) >= Oldage ? 'Older' : 'Younger';
+                const younger = formArray.reduce((a, b) => {
+                    return a.Age < b.Age ? a : b;
+                },formArray[0]);
+                const isYounger = data === younger ? 'Younger' : 'Older';
+
+                
+            const tableHeadings = index === 0 ? `
+            <table style="border-collapse: separate; border-spacing: 40px;">
+                <tr>
+                    <th>SI No</th>
+                    <th>Full Name</th>
+                    <th>DOB</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Younger/Older</th>
+                </tr>
+            </table>` : '';
+
+        return `
+            ${tableHeadings}
+            <table style="width:80%; margin-left: 2%">
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${data.FirstName} ${data.LastName}</td>
+                    <td>${data.dob}</td>
+                    <td>${data.Age}</td>
+                    <td>${data.Gender}</td>
+                    <td>${isYounger}</td>
+                </tr>
+            </table>
+            <hr>
+        `;
+
+            }).join('');
+
+            formDataDisplay.innerHTML = displayText;
+        }
+    </script>
+</body>
+
+</html>
